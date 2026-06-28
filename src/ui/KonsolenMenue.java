@@ -1,5 +1,6 @@
 package ui;
 
+// Importiert benötigte Klassen für Fehler, Manager, Modelle und Eingabe
 import exception.BuchungsException;
 import manager.BuchungsManager;
 import model.Admin;
@@ -11,21 +12,28 @@ import java.util.List;
 import java.util.Scanner;
 
 public class KonsolenMenue {
-	
-	//Yousef
 
+    // Hauptmanager, der Räume, Buchungen und Logik verwaltet
     private BuchungsManager manager;
-    private Scanner         scanner;
-    private int             naechsteStudentId;
-    private List<Admin>     admins;
 
+    // Scanner für Konsoleneingaben
+    private Scanner scanner;
+
+    // Laufende ID für neu erstellte Studenten
+    private int naechsteStudentId;
+
+    // Liste aller Admins, die sich einloggen können
+    private List<Admin> admins;
+
+    // Konstruktor: Initialisiert Manager, Scanner, Student-ID und Admin-Liste
     public KonsolenMenue() {
         this.manager           = new BuchungsManager();
         this.scanner           = new Scanner(System.in);
         this.naechsteStudentId = 1;
-        this.admins            = erstelleAdmins();
+        this.admins            = erstelleAdmins(); // Admins werden erzeugt
     }
 
+    // Erstellt eine feste Liste von Admins
     private List<Admin> erstelleAdmins() {
         List<Admin> liste = new ArrayList<>();
         liste.add(new Admin(1, "Leon Mayer",  "leon.mayer@hft-stuttgart.de",  "Bibliothek", "leon123"));
@@ -34,11 +42,13 @@ public class KonsolenMenue {
         return liste;
     }
 
+    // Einstiegspunkt des Programms
     public static void main(String[] args) {
         KonsolenMenue menue = new KonsolenMenue();
-        menue.start();
+        menue.start(); // Startet das Hauptmenü
     }
 
+    // Hauptmenü: Auswahl zwischen Admin, Student oder Beenden
     public void start() {
         System.out.println("========================================");
         System.out.println("  Willkommen im Lernraum-Buchungssystem");
@@ -55,14 +65,14 @@ public class KonsolenMenue {
             int wahl = leseEingabe();
             switch (wahl) {
                 case 1:
-                    Admin admin = adminLogin();
+                    Admin admin = adminLogin(); // Admin-Login
                     if (admin != null) {
-                        zeigeAdminMenue(admin);
+                        zeigeAdminMenue(admin); // Admin-Menü anzeigen
                     }
                     break;
                 case 2:
-                    Student student = studentLogin();
-                    zeigeStudentMenue(student);
+                    Student student = studentLogin(); // Student-Login
+                    zeigeStudentMenue(student);       // Student-Menü anzeigen
                     break;
                 case 0:
                     laufen = false;
@@ -72,9 +82,10 @@ public class KonsolenMenue {
                     System.out.println("Ungültige Eingabe. Bitte 0, 1 oder 2 eingeben.");
             }
         }
-        scanner.close();
+        scanner.close(); // Scanner schließen
     }
 
+    // Menü für Admins
     public void zeigeAdminMenue(Admin admin) {
         boolean laufen = true;
         while (laufen) {
@@ -91,16 +102,16 @@ public class KonsolenMenue {
             try {
                 switch (wahl) {
                     case 1:
-                        raumAnlegenDialog();
+                        raumAnlegenDialog(); // Raum anlegen
                         break;
                     case 2:
-                        raumLoeschenDialog();
+                        raumLoeschenDialog(); // Raum löschen
                         break;
                     case 3:
-                        manager.uebersichtsansicht();
+                        manager.uebersichtsansicht(); // Übersicht anzeigen
                         break;
                     case 4:
-                        buchungStornieren();
+                        buchungStornieren(); // Buchung stornieren
                         break;
                     case 0:
                         laufen = false;
@@ -114,6 +125,7 @@ public class KonsolenMenue {
         }
     }
 
+    // Menü für Studenten
     public void zeigeStudentMenue(Student student) {
         boolean laufen = true;
         while (laufen) {
@@ -130,16 +142,16 @@ public class KonsolenMenue {
             try {
                 switch (wahl) {
                     case 1:
-                        verfuegbareRaeume();
+                        verfuegbareRaeume(); // Räume anzeigen
                         break;
                     case 2:
-                        buchungErstellenDialog(student);
+                        buchungErstellenDialog(student); // Buchung erstellen
                         break;
                     case 3:
-                        meineBuchungenAnzeigen(student);
+                        meineBuchungenAnzeigen(student); // Eigene Buchungen anzeigen
                         break;
                     case 4:
-                        buchungStornieren();
+                        buchungStornieren(); // Buchung stornieren
                         break;
                     case 0:
                         laufen = false;
@@ -152,8 +164,8 @@ public class KonsolenMenue {
             }
         }
     }
-	//Yousef
-//Aldrin
+
+    // Admin-Login mit maximal 3 Versuchen
     private Admin adminLogin() {
         System.out.println("\n--- Admin Login ---");
         int versuche = 0;
@@ -192,6 +204,7 @@ public class KonsolenMenue {
         return null;
     }
 
+    // Sucht Admin anhand Name + Passwort
     private Admin findeAdmin(String name, String passwort) {
         for (Admin a : admins) {
             if (a.getName().equals(name) && a.getPasswort().equals(passwort)) {
@@ -201,6 +214,7 @@ public class KonsolenMenue {
         return null;
     }
 
+    // Student-Login: Validierung erfolgt durch Student-Konstruktor
     private Student studentLogin() {
         System.out.println("\n--- Student:in Login ---");
 
@@ -228,6 +242,7 @@ public class KonsolenMenue {
         }
     }
 
+    // Dialog zum Anlegen eines Raumes
     private void raumAnlegenDialog() {
         System.out.print("Raumname (Format Gebäude/Raumnummer, z.B. 3/014): ");
         String name = scanner.nextLine().trim();
@@ -250,22 +265,26 @@ public class KonsolenMenue {
         manager.raumAnlegen(name, kapazitaet, ausstattung, oeffnungszeitfenster);
     }
 
+    // Dialog zum Löschen eines Raumes
     private void raumLoeschenDialog() {
         System.out.print("Raum-ID zum Löschen: ");
         int id = leseEingabe();
         manager.raumLoeschen(id);
     }
 
+    // Dialog zum Stornieren einer Buchung
     private void buchungStornieren() {
         System.out.print("Buchungs-ID zum Stornieren: ");
         int id = leseEingabe();
         manager.buchungStornieren(id);
     }
 
+    // Zeigt alle verfügbaren Räume
     private void verfuegbareRaeume() {
         manager.verfuegbareRaeumeAnzeigen();
     }
 
+    // Dialog zum Erstellen einer Buchung
     private void buchungErstellenDialog(Student student) {
         Zeitslot slot = zeitslotEingabe();
 
@@ -275,6 +294,7 @@ public class KonsolenMenue {
         manager.buchungErstellen(student, raumId, slot);
     }
 
+    // Zeigt alle Buchungen des eingeloggten Studenten
     private void meineBuchungenAnzeigen(Student student) {
         System.out.println("\n===== MEINE BUCHUNGEN =====");
         var meineBuchungen = student.getBuchungen(manager.getBuchungen());
@@ -288,6 +308,7 @@ public class KonsolenMenue {
         System.out.println("===========================");
     }
 
+    // Eingabe eines Zeitslots
     private Zeitslot zeitslotEingabe() {
         System.out.print("Datum (z.B. 12.06.2026): ");
         String datum = scanner.nextLine().trim();
@@ -301,6 +322,7 @@ public class KonsolenMenue {
         return new Zeitslot(datum, start, ende);
     }
 
+    // Liest eine Zahl ein und behandelt falsche Eingaben
     public int leseEingabe() {
         try {
             return Integer.parseInt(scanner.nextLine().trim());
@@ -310,4 +332,3 @@ public class KonsolenMenue {
         }
     }
 }
-//Aldrin
